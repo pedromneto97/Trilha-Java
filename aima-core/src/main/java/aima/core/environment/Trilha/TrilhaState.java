@@ -112,6 +112,8 @@ public class TrilhaState implements Cloneable {
     }
 
     public void mark(int origem, int destino) {
+        if (!this.getMoves().contains(new XYLocation(origem, destino)))
+            return;
         if (utility == -1 && board[26] == "1") {
             if (board[destino] != playerToMove) {
                 board[destino] = EMPTY;
@@ -126,7 +128,7 @@ public class TrilhaState implements Cloneable {
                 board[destino] = playerToMove;
                 if (playerToMove == BRANCO) {
                     if (board[26] == "0") {
-                        if (board[24] != "9")
+                        if (Integer.parseInt(board[24]) < 9)
                             board[24] = Integer.toString(Integer.parseInt(board[24]) + 1);
                         if (this.verificaTrinca(destino))
                             board[26] = "1";
@@ -135,7 +137,7 @@ public class TrilhaState implements Cloneable {
                     }
                 } else {
                     if (board[26] == "0") {
-                        if (board[25] != "9")
+                        if (Integer.parseInt(board[25]) < 9)
                             board[25] = Integer.toString(Integer.parseInt(board[25]) + 1);
                         if (this.verificaTrinca(destino))
                             board[26] = "1";
@@ -195,8 +197,8 @@ public class TrilhaState implements Cloneable {
         }
     }
 
-    private boolean contaPecas() {
-        if (Integer.parseInt(board[24]) != 9 && Integer.parseInt(board[25]) != 9) {
+    public boolean contaPecas() {
+        if (Integer.parseInt(board[24]) < 9 && Integer.parseInt(board[25]) < 9) {
             return false;
         }
         int contb = 0;
@@ -284,9 +286,9 @@ public class TrilhaState implements Cloneable {
         strBuilder.append(board[0] + "----------------" + board[1] + "----------------" + board[2] + "\n");
         strBuilder.append("|     " + board[8] + "---------" + board[9] + "---------" + board[10] + "     |\n");
         strBuilder.append("|       |     " + board[16] + "-----" + board[17] + "-----" + board[18] + "     |     |\n");
-        strBuilder.append(board[7] + "--" + board[15] + "--" + board[23] + "                " + board[19] + "--" + board[11] + "--" + board[3] + "\n");
+        strBuilder.append(board[7] + "--" + board[15] + "--" + board[23] + "               " + board[19] + "--" + board[11] + "--" + board[3] + "\n");
         strBuilder.append("|       |     " + board[22] + "-----" + board[21] + "-----" + board[20] + "     |     |\n");
-        strBuilder.append("|       " + board[14] + "-----" + board[13] + "-----" + board[12] + "     |     |\n");
+        strBuilder.append("|       " + board[14] + "---------" + board[13] + "---------" + board[12] + "     |     |\n");
         strBuilder.append(board[6] + "----------------" + board[5] + "----------------" + board[4] + "\n");
         strBuilder.append("\n");
         return strBuilder.toString();
