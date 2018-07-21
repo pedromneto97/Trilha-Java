@@ -40,7 +40,7 @@ public class TrilhaTest {
     public void testOnCreationBoardIsEmpty() {
         for (int i = 0; i < 24; i++) {
             Assert.assertEquals(TrilhaState.EMPTY, state.getValue(-1, i));
-            Assert.assertEquals(true, state.isEmpty(i));
+            Assert.assertTrue(state.isEmpty(i));
         }
     }
 
@@ -48,7 +48,7 @@ public class TrilhaTest {
     public void testMakingOneMoveChangesState() {
         state = game.getResult(state, new XYLocation(-1, 0));
         Assert.assertEquals(TrilhaState.BRANCO, state.getValue(-1, 0));
-        Assert.assertEquals(false, state.isEmpty(0));
+        Assert.assertFalse(state.isEmpty(0));
         Assert.assertEquals(23, game.getActions(state).size());
         Assert.assertEquals(TrilhaState.PRETO, game.getPlayer(state));
     }
@@ -58,8 +58,8 @@ public class TrilhaTest {
         state = game.getResult(state, new XYLocation(-1, 0));
         state = game.getResult(state, new XYLocation(-1, 1));
         Assert.assertEquals(TrilhaState.PRETO, state.getValue(-1, 1));
-        Assert.assertEquals(false, state.isEmpty(0));
-        Assert.assertEquals(true, state.isEmpty(3));
+        Assert.assertFalse(state.isEmpty(0));
+        Assert.assertTrue(state.isEmpty(3));
         Assert.assertEquals(22, game.getActions(state).size());
         Assert.assertEquals(TrilhaState.BRANCO, game.getPlayer(state));
     }
@@ -69,9 +69,9 @@ public class TrilhaTest {
         state.mark(-1, 0);
         state.mark(-1, 8);
         state.mark(-1, 7);
-        Assert.assertEquals(false, state.verificaTrinca(15));
+        Assert.assertFalse(state.verificaTrinca(15));
         state.mark(-1, 15);
-        Assert.assertEquals(true, state.verificaTrinca(6));
+        Assert.assertTrue(state.verificaTrinca(6));
     }
 
     @Test
@@ -81,11 +81,11 @@ public class TrilhaTest {
         state.mark(-1, 7);
         state.mark(-1, 15);
         state.mark(-1, 6);
-        Assert.assertEquals(state.BRANCO, state.getPlayerToMove());
+        Assert.assertEquals(TrilhaState.BRANCO, state.getPlayerToMove());
         Assert.assertEquals("1", state.getValue(-1, 26));
         Assert.assertEquals(2, state.getMoves().size());
         state.mark(-1, 15);
-        Assert.assertEquals(state.EMPTY, state.getValue(-1, 15));
+        Assert.assertEquals(TrilhaState.EMPTY, state.getValue(-1, 15));
         Assert.assertEquals("0", state.getValue(-1, 26));
         Assert.assertEquals("3", state.getValue(-1, 24));
         Assert.assertEquals("2", state.getValue(-1, 25));
@@ -97,13 +97,13 @@ public class TrilhaTest {
             state.mark(-1, i);
         }
         state.mark(-1, 0);
-        Assert.assertEquals(state.BRANCO, state.getPlayerToMove());
+        Assert.assertEquals(TrilhaState.BRANCO, state.getPlayerToMove());
         Assert.assertEquals(1, state.getMoves().size());
         Assert.assertEquals("9", state.getValue(-1, 24));
         state.mark(16, 23);
-        Assert.assertEquals(state.PRETO, state.getPlayerToMove());
-        Assert.assertEquals(state.EMPTY, state.getValue(-1, 16));
-        Assert.assertEquals(state.BRANCO, state.getValue(-1, 23));
+        Assert.assertEquals(TrilhaState.PRETO, state.getPlayerToMove());
+        Assert.assertEquals(TrilhaState.EMPTY, state.getValue(-1, 16));
+        Assert.assertEquals(TrilhaState.BRANCO, state.getValue(-1, 23));
 
     }
 
