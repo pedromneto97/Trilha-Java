@@ -1,6 +1,5 @@
 package aima.core.environment.Trilha;
 
-import aima.core.environment.tictactoe.TicTacToeState;
 import aima.core.util.datastructure.XYLocation;
 
 import java.util.ArrayList;
@@ -108,7 +107,8 @@ public class TrilhaState implements Cloneable {
     }
 
     public void mark(XYLocation action) {
-        mark(action.getXCoOrdinate(), action.getYCoOrdinate());
+        if (this.getMoves().contains(action))
+            mark(action.getXCoOrdinate(), action.getYCoOrdinate());
     }
 
     public void mark(int origem, int destino) {
@@ -229,6 +229,7 @@ public class TrilhaState implements Cloneable {
 
     public List<XYLocation> getMoves() {
         List<XYLocation> result = new ArrayList<XYLocation>();
+        //Verifica se não é para remover uma peça
         if (board[26] == "1") {
             for (int i = 0; i < 24; i++) {
                 if (board[i] != EMPTY && board[i] != this.playerToMove)

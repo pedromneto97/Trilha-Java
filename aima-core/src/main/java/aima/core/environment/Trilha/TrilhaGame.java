@@ -1,6 +1,5 @@
 package aima.core.environment.Trilha;
 
-import aima.core.environment.tictactoe.TicTacToeState;
 import aima.core.search.adversarial.Game;
 import aima.core.util.datastructure.XYLocation;
 
@@ -27,7 +26,7 @@ public class TrilhaGame implements Game<TrilhaState, XYLocation, String> {
 
     @Override
     public List<XYLocation> getActions(TrilhaState state) {
-        return state.getUnMarkedPositions();
+        return state.getMoves();
     }
 
     @Override
