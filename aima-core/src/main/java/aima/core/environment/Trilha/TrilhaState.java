@@ -9,7 +9,7 @@ import java.util.List;
 public class TrilhaState implements Cloneable {
     public static final String BRANCO = "BRANCO";
     public static final String PRETO = "PRETO";
-    public static final String EMPTY = "-";
+    public static final String EMPTY = "XXXXX";
 
     private String[] board = new String[]{EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY,
             EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, "0", "0", "0"};
@@ -18,47 +18,47 @@ public class TrilhaState implements Cloneable {
 
     private double utility = -1; // 1: win for X, 0: win for O, 0.5: draw
 
-    private int adjacentes[][] = new int[24][4];
+    public int adjacentes[][] = new int[24][4];
 
     public TrilhaState() {
-        for (int i = 1; i <= 24; i++) {
-            //Caso x seja ímpar
-            if ((i % 2) == 1) {
-                //Verifica se é 1, 9 ou 17
-                if ((i % 8) == 1) {
+        for (int i = 0; i < 24; i++) {
+            //Caso x seja par
+            if ((i % 2) == 0) {
+                //Verifica se é 0, 8 ou 16
+                if ((i % 8) == 0) {
                     this.adjacentes[i][0] = i + 1;
                     this.adjacentes[i][1] = i + 7;
-                    this.adjacentes[i][2] = 0;
-                    this.adjacentes[i][3] = 0;
+                    this.adjacentes[i][2] = -1;
+                    this.adjacentes[i][3] = -1;
                 } else {
                     this.adjacentes[i][0] = i - 1;
                     this.adjacentes[i][1] = i + 1;
-                    this.adjacentes[i][2] = 0;
-                    this.adjacentes[i][3] = 0;
+                    this.adjacentes[i][2] = -1;
+                    this.adjacentes[i][3] = -1;
                 }
             } else {
-                //Caso par
+                //Caso ímpar
                 //1 até 8
-                if (i <= 8) {
-                    if ((i % 8) == 0) {
+                if (i < 8) {
+                    if ((i % 8) == 7) {
                         this.adjacentes[i][0] = i - 7;
                         this.adjacentes[i][1] = i - 1;
                         this.adjacentes[i][2] = i + 8;
-                        this.adjacentes[i][3] = 0;
+                        this.adjacentes[i][3] = -1;
                     } else {
                         this.adjacentes[i][0] = i - 1;
                         this.adjacentes[i][1] = i + 1;
                         this.adjacentes[i][2] = i + 8;
-                        this.adjacentes[i][3] = 0;
+                        this.adjacentes[i][3] = -1;
                     }
                 }
                 //De 9 até 16
                 else {
-                    if (i <= 16) {
-                        if ((i % 8) == 0) {
+                    if (i < 16) {
+                        if ((i % 8) == 7) {
                             this.adjacentes[i][0] = i - 8;
                             this.adjacentes[i][1] = i - 7;
-                            this.adjacentes[i][2] = i + 1;
+                            this.adjacentes[i][2] = i - 1;
                             this.adjacentes[i][3] = i + 8;
                         } else {
                             this.adjacentes[i][0] = i - 8;
@@ -69,16 +69,16 @@ public class TrilhaState implements Cloneable {
                     }
                     //De 17 até 24
                     else {
-                        if ((i % 8) == 0) {
+                        if ((i % 8) == 7) {
                             this.adjacentes[i][0] = i - 8;
                             this.adjacentes[i][1] = i - 7;
                             this.adjacentes[i][2] = i - 1;
-                            this.adjacentes[i][3] = 0;
+                            this.adjacentes[i][3] = -1;
                         } else {
                             this.adjacentes[i][0] = i - 8;
                             this.adjacentes[i][1] = i - 1;
                             this.adjacentes[i][2] = i + 1;
-                            this.adjacentes[i][3] = 0;
+                            this.adjacentes[i][3] = -1;
                         }
                     }
                 }
@@ -95,7 +95,7 @@ public class TrilhaState implements Cloneable {
     }
 
     public String getValue(int origem, int destino) {
-        if (origem == 0)
+        if (origem == -1)
             return board[destino];
         if (board[origem] == this.getPlayerToMove())
             return board[destino];
@@ -113,27 +113,36 @@ public class TrilhaState implements Cloneable {
 
     public void mark(int origem, int destino) {
         if (utility == -1 && board[26] == "1") {
-            if (board[destino] != this.getPlayerToMove()) {
+            if (board[destino] != playerToMove) {
                 board[destino] = EMPTY;
                 board[26] = "0";
                 analyzeUtility();
+                playerToMove = (playerToMove == BRANCO ? PRETO : BRANCO);
             }
         } else {
-            if (utility == -1 && getValue(origem, destino) == EMPTY) {
-                if (origem != 0)
+            if ((utility == -1) && getValue(origem, destino).equals(EMPTY)) {
+                if (origem != -1)
                     board[origem] = EMPTY;
-                if (playerToMove == BRANCO) {
-                    if (this.verificaTrinca(destino) && board[26] == "0") {
-                        board[26] = "1";
-                    } else
-                        playerToMove = PRETO;
-                } else {
-                    if (this.verificaTrinca(destino) && board[26] == "0") {
-                        board[26] = "1";
-                    } else
-                        playerToMove = BRANCO;
-                }
                 board[destino] = playerToMove;
+                if (playerToMove == BRANCO) {
+                    if (board[26] == "0") {
+                        if (board[24] != "9")
+                            board[24] = Integer.toString(Integer.parseInt(board[24]) + 1);
+                        if (this.verificaTrinca(destino))
+                            board[26] = "1";
+                        else
+                            playerToMove = PRETO;
+                    }
+                } else {
+                    if (board[26] == "0") {
+                        if (board[25] != "9")
+                            board[25] = Integer.toString(Integer.parseInt(board[25]) + 1);
+                        if (this.verificaTrinca(destino))
+                            board[26] = "1";
+                        else
+                            playerToMove = BRANCO;
+                    }
+                }
             }
         }
     }
@@ -145,15 +154,15 @@ public class TrilhaState implements Cloneable {
             utility = -1;
     }
 
-    private boolean verificaTrinca(int move) {
-        // Caso move seja ímpar
-        if ((move % 2) == 1) {
-            // Verifica se é 1,9 ou 17
-            if ((move % 8) == 1) {
+    public boolean verificaTrinca(int move) {
+        // Caso move seja par
+        if ((move % 2) == 0) {
+            // Verifica se é 0,8,16
+            if ((move % 8) == 0) {
                 return (board[move + 1] == playerToMove && board[move + 2] == playerToMove) || (
                         board[move + 7] == playerToMove && board[move + 6] == playerToMove);
             } else {
-                if ((move % 8) == 7) {
+                if ((move % 8) == 6) {
                     return (board[move + 1] == playerToMove && board[move - 6] == playerToMove) ||
                             (board[move - 1] == playerToMove && board[move - 2] == playerToMove);
                 } else {
@@ -162,21 +171,21 @@ public class TrilhaState implements Cloneable {
                 }
             }
         }
-        // Caso par
+        // Caso ímpar
         else {
-            if ((move % 8) == 0) {
+            if ((move % 8) == 7) {
                 if (board[move - 7] == playerToMove && board[move - 1] == playerToMove)
                     return true;
             } else {
                 if (board[move + 1] == playerToMove && board[move - 1] == playerToMove)
                     return true;
             }
-            if (move <= 8) {
+            if (move < 8) {
                 return (board[move + 8] == playerToMove && board[move + 16] == playerToMove);
             }
             // De 9 até 16
             else {
-                if (move <= 16)
+                if (move < 16)
                     return (board[move - 8] == playerToMove && board[move + 8] == playerToMove);
                     // De 17 até 24
                 else
@@ -211,41 +220,23 @@ public class TrilhaState implements Cloneable {
         if (board[26] == "1") {
             for (int i = 0; i < 24; i++) {
                 if (board[i] != EMPTY && board[i] != this.playerToMove)
-                    result.add(new XYLocation(0, i));
-
+                    result.add(new XYLocation(-1, i));
             }
         } else {
-            if (this.playerToMove == BRANCO) {
-                if (Integer.parseInt(board[24]) < 9) {
-                    for (int i = 0; i < 24; i++) {
-                        if (isEmpty(i))
-                            result.add(new XYLocation(0, i));
-                    }
-                } else {
-                    for (int i = 0; i < 24; i++) {
-                        if (board[i] == BRANCO) {
-                            for (int e : this.adjacentes[i + 1]) {
-                                if (board[e] == EMPTY)
-                                    result.add(new XYLocation(i, e));
-                            }
-                        }
-                    }
+            int aux = 1;
+            if (this.playerToMove == BRANCO)
+                aux = 0;
+            if (Integer.parseInt(board[24 + aux]) < 9) {
+                for (int i = 0; i < 24; i++) {
+                    if (isEmpty(i))
+                        result.add(new XYLocation(-1, i));
                 }
             } else {
-                if (this.playerToMove == PRETO) {
-                    if (Integer.parseInt(board[25]) < 9) {
-                        for (int i = 0; i < 24; i++) {
-                            if (isEmpty(i))
-                                result.add(new XYLocation(0, i));
-                        }
-                    } else {
-                        for (int i = 0; i < 24; i++) {
-                            if (board[i] == PRETO) {
-                                for (int e : this.adjacentes[i + 1]) {
-                                    if (board[e] == EMPTY)
-                                        result.add(new XYLocation(i, e));
-                                }
-                            }
+                for (int i = 0; i < 24; i++) {
+                    if (board[i] == playerToMove) {
+                        for (int e : this.adjacentes[i]) {
+                            if (e != -1 && getValue(-1, e) == EMPTY)
+                                result.add(new XYLocation(i, e));
                         }
                     }
                 }
@@ -290,12 +281,14 @@ public class TrilhaState implements Cloneable {
     @Override
     public String toString() {
         StringBuilder strBuilder = new StringBuilder();
-        for (int row = 0; row < 3; row++) {
-            for (int col = 0; col < 3; col++) {
-                strBuilder.append(getValue(col, row) + " ");
-            }
-            strBuilder.append("\n");
-        }
+        strBuilder.append(board[0] + "----------------" + board[1] + "----------------" + board[2] + "\n");
+        strBuilder.append("|     " + board[8] + "---------" + board[9] + "---------" + board[10] + "     |\n");
+        strBuilder.append("|       |     " + board[16] + "-----" + board[17] + "-----" + board[18] + "     |     |\n");
+        strBuilder.append(board[7] + "--" + board[15] + "--" + board[23] + "                " + board[19] + "--" + board[11] + "--" + board[3] + "\n");
+        strBuilder.append("|       |     " + board[22] + "-----" + board[21] + "-----" + board[20] + "     |     |\n");
+        strBuilder.append("|       " + board[14] + "-----" + board[13] + "-----" + board[12] + "     |     |\n");
+        strBuilder.append(board[6] + "----------------" + board[5] + "----------------" + board[4] + "\n");
+        strBuilder.append("\n");
         return strBuilder.toString();
     }
 }
