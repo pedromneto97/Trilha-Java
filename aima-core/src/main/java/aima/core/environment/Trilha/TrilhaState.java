@@ -54,7 +54,7 @@ public class TrilhaState implements Cloneable {
                 }
                 //De 9 até 16
                 else {
-                    if (i > 8 && i <= 16) {
+                    if (i <= 16) {
                         if ((i % 8) == 0) {
                             this.adjacentes[i][0] = i - 8;
                             this.adjacentes[i][1] = i - 7;
@@ -124,13 +124,11 @@ public class TrilhaState implements Cloneable {
                     board[origem] = EMPTY;
                 if (playerToMove == BRANCO) {
                     if (this.verificaTrinca(destino) && board[26] == "0") {
-                        playerToMove = BRANCO;
                         board[26] = "1";
                     } else
                         playerToMove = PRETO;
                 } else {
                     if (this.verificaTrinca(destino) && board[26] == "0") {
-                        playerToMove = PRETO;
                         board[26] = "1";
                     } else
                         playerToMove = BRANCO;
@@ -152,25 +150,15 @@ public class TrilhaState implements Cloneable {
         if ((move % 2) == 1) {
             // Verifica se é 1,9 ou 17
             if ((move % 8) == 1) {
-                if ((board[move + 1] == playerToMove && board[move + 2] == playerToMove) || (
-                        board[move + 7] == playerToMove && board[move + 6] == playerToMove))
-                    return true;
-                else
-                    return false;
+                return (board[move + 1] == playerToMove && board[move + 2] == playerToMove) || (
+                        board[move + 7] == playerToMove && board[move + 6] == playerToMove);
             } else {
                 if ((move % 8) == 7) {
-
-                    if ((board[move + 1] == playerToMove && board[move - 6] == playerToMove) ||
-                            (board[move - 1] == playerToMove && board[move - 2] == playerToMove))
-                        return true;
-                    else
-                        return false;
+                    return (board[move + 1] == playerToMove && board[move - 6] == playerToMove) ||
+                            (board[move - 1] == playerToMove && board[move - 2] == playerToMove);
                 } else {
-                    if ((board[move - 1] == playerToMove && board[move - 2] == playerToMove) ||
-                            (board[move + 1] == playerToMove && board[move + 2] == playerToMove))
-                        return true;
-                    else
-                        return false;
+                    return (board[move - 1] == playerToMove && board[move - 2] == playerToMove) ||
+                            (board[move + 1] == playerToMove && board[move + 2] == playerToMove);
                 }
             }
         }
@@ -184,26 +172,16 @@ public class TrilhaState implements Cloneable {
                     return true;
             }
             if (move <= 8) {
-                if (board[move + 8] == playerToMove && board[move + 16] == playerToMove)
-                    return true;
-                else
-                    return false;
+                return (board[move + 8] == playerToMove && board[move + 16] == playerToMove);
             }
             // De 9 até 16
             else {
-                if (move > 8 && move <= 16) {
-                    if (board[move - 8] == playerToMove && board[move + 8] == playerToMove)
-                        return true;
-                    else
-                        return false;
-                }
-                // De 17 até 24
-                else {
-                    if (board[move - 8] == playerToMove && board[move - 16] == playerToMove)
-                        return true;
-                    else
-                        return false;
-                }
+                if (move <= 16)
+                    return (board[move - 8] == playerToMove && board[move + 8] == playerToMove);
+                    // De 17 até 24
+                else
+                    return (board[move - 8] == playerToMove && board[move - 16] == playerToMove);
+
             }
         }
     }
@@ -319,13 +297,5 @@ public class TrilhaState implements Cloneable {
             strBuilder.append("\n");
         }
         return strBuilder.toString();
-    }
-
-    //
-    // PRIVATE METHODS
-    //
-
-    private int getAbsPosition(int col, int row) {
-        return row * 3 + col;
     }
 }
