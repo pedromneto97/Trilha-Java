@@ -2,7 +2,7 @@ package aima.test.core.unit.environment.Trilha;
 
 import aima.core.environment.Trilha.TrilhaGame;
 import aima.core.environment.Trilha.TrilhaState;
-import aima.core.search.adversarial.MinimaxSearch;
+import aima.core.search.adversarial.IterativeDeepeningAlphaBetaSearch;
 import aima.core.util.datastructure.XYLocation;
 import org.junit.Assert;
 import org.junit.Before;
@@ -104,45 +104,57 @@ public class TrilhaTest {
         Assert.assertEquals(TrilhaState.PRETO, state.getPlayerToMove());
         Assert.assertEquals(TrilhaState.EMPTY, state.getValue(-1, 16));
         Assert.assertEquals(TrilhaState.BRANCO, state.getValue(-1, 23));
-
     }
 
     @Test
-    public void testMinmaxValueCalculation() {
-        MinimaxSearch<TrilhaState, XYLocation, String> search = MinimaxSearch
-                .createFor(game);
-        Assert.assertTrue(epsilon > Math.abs(search.maxValue(state,
-                TrilhaState.BRANCO) - 0.5));
-        Assert.assertTrue(epsilon > Math.abs(search.minValue(state,
-                TrilhaState.PRETO) - 0.5));
-
-        // x o x
-        // o o x
-        // - - -
-        // next move: x
-        state.mark(0, 0); // x
-        state.mark(1, 0); // o
-        state.mark(2, 0); // x
-
-        state.mark(0, 1); // o
-        state.mark(2, 1); // x
-        state.mark(1, 1); // o
-
-        Assert.assertTrue(epsilon > Math.abs(search.maxValue(state,
-                TrilhaState.BRANCO) - 1));
-        Assert.assertTrue(epsilon > Math.abs(search.minValue(state,
-                TrilhaState.PRETO)));
-        XYLocation action = search.makeDecision(state);
-        Assert.assertEquals(new XYLocation(2, 2), action);
+    public void testFim() {
+        state.mark(-1, 0);//Branco +1
+        state.mark(-1, 8);//Preto +1
+        state.mark(-1, 7);//Branco +2
+        state.mark(-1, 15);//Preto +2
+        state.mark(-1, 6);//Branco +3
+        state.mark(-1, 15);//Branco Remove 8
+        state.mark(-1, 15);//Preto +3
+        state.mark(-1, 5);//Branco +4
+        state.mark(-1, 9);//Preto +4
+        state.mark(-1, 4);//Branco +5
+        state.mark(-1, 9);//Branco Remove 7
+        state.mark(-1, 9);//Preto +5
+        state.mark(-1, 2);//Branco +6
+        state.mark(-1, 12);//Preto +6
+        state.mark(-1, 3);//Branco +7
+        state.mark(-1, 12);//Branco Remove 6
+        state.mark(-1, 12);//Preto +7
+        state.mark(-1, 1);//Branco +8
+        state.mark(-1, 12);//Branco Remove 5
+        state.mark(-1, 12);//Preto +8
+        state.mark(-1, 13);//Branco +9
+        state.mark(-1, 20);//Preto +9
+        state.mark(3, 11);//Branco Move
+        state.mark(15, 14);//Preto Move
+        state.mark(11, 3);//Branco Move
+        state.mark(-1, 12);//Branco Remove 4
+        state.mark(14, 15);//Preto Move
+        state.mark(3, 11);//Branco Move
+        state.mark(15, 14);//Preto Move
+        state.mark(11, 3);//Branco Move
+        state.mark(-1, 8);//Branco Remove 3
+        state.mark(14, 15);//Preto Move
+        state.mark(3, 11);//Branco Move
+        state.mark(15, 14);//Preto Move
+        state.mark(11, 3);//Branco Move
+        state.mark(-1, 14);//Branco Remove 2
+        //GG
+        Assert.assertTrue(game.isTerminal(state));
     }
 
     @Test
-    public void testMinmaxDecision() {
-        MinimaxSearch<TrilhaState, XYLocation, String> search = MinimaxSearch
-                .createFor(game);
-        search.makeDecision(state);
+    public void testIterativeDeepeningAlphaBetaDecision() {
+        IterativeDeepeningAlphaBetaSearch<TrilhaState, XYLocation, String> search = IterativeDeepeningAlphaBetaSearch
+                .createFor(game, 0.0, 1.0, 100);
+        XYLocation ac = search.makeDecision(state);
         int expandedNodes = search.getMetrics().getInt("expandedNodes");
-        Assert.assertEquals(549945, expandedNodes);
+        System.out.println(ac);
     }
 
 }
