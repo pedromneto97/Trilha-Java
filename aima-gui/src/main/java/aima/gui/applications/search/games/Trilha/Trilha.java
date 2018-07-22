@@ -37,7 +37,7 @@ public class Trilha extends JFrame {
         //Pega o estado inicial
         this.state = this.game.getInitialState();
         //Cria a pesquisa, alterar o último parâmetro, altera o tempo de busca da IA
-        this.search = IterativeDeepeningAlphaBetaSearch.createFor(game, 0.0, 1.0, 120);
+        this.search = IterativeDeepeningAlphaBetaSearch.createFor(game, 0.0, 1.0, 1);
         this.anterior = -1;
         setLayout(null);
         for (int i = 0; i < 24; i++) {
@@ -115,6 +115,11 @@ public class Trilha extends JFrame {
                                 ((JButton) e.getSource()).setText("B");
                             }
                             state.mark(move);
+                            if (game.isTerminal(state)) {
+                                JOptionPane.showMessageDialog(null, "BRANCO GANHOU");
+                                dispose();
+                                return;
+                            }
                             while (state.getPlayerToMove() == TrilhaState.PRETO) {
                                 XYLocation ac = search.makeDecision(state);
                                 if (ac.getXCoOrdinate() != -1)
@@ -127,6 +132,11 @@ public class Trilha extends JFrame {
                                 }
 
                                 state.mark(ac);
+                            }
+                            if (game.isTerminal(state)) {
+                                JOptionPane.showMessageDialog(null, "PRETO GANHOU");
+                                dispose();
+                                return;
                             }
                         }
                         return;
