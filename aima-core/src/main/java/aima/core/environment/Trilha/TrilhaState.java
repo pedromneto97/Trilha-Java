@@ -4,6 +4,7 @@ import aima.core.util.datastructure.XYLocation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class TrilhaState implements Cloneable {
@@ -21,6 +22,7 @@ public class TrilhaState implements Cloneable {
     public int adjacentes[][] = new int[24][4];
 
     public TrilhaState() {
+        // Cria os adjacentes
         for (int i = 0; i < 24; i++) {
             //Caso x seja par
             if ((i % 2) == 0) {
@@ -86,14 +88,17 @@ public class TrilhaState implements Cloneable {
         }
     }
 
+    //Retorna o próximo jogador
     public String getPlayerToMove() {
         return playerToMove;
     }
 
+    //Retorna se uma posição está vazia
     public boolean isEmpty(int pos) {
         return board[pos] == EMPTY;
     }
 
+    //Retorna o valor de uma posição, origem deve ser -1
     public String getValue(int origem, int destino) {
         if (origem == -1)
             return board[destino];
@@ -102,15 +107,18 @@ public class TrilhaState implements Cloneable {
         return "0";
     }
 
+    //Retorna a utility
     public double getUtility() {
         return utility;
     }
 
+    //Executa uma ação a partir de um XYLocation
     public void mark(XYLocation action) {
         if (this.getMoves().contains(action))
             mark(action.getXCoOrdinate(), action.getYCoOrdinate());
     }
 
+    //Executa uma ação a partir de dois pontos
     public void mark(int origem, int destino) {
         if (!this.getMoves().contains(new XYLocation(origem, destino)))
             return;
@@ -149,6 +157,7 @@ public class TrilhaState implements Cloneable {
         }
     }
 
+    //Verifica se o movimento é final
     private void analyzeUtility() {
         if (this.contaPecas()) {
             utility = (playerToMove == BRANCO ? 1 : 0);
@@ -156,6 +165,7 @@ public class TrilhaState implements Cloneable {
             utility = -1;
     }
 
+    //Verifica se o movimento aplicado gera uma trinca
     public boolean verificaTrinca(int move) {
         // Caso move seja par
         if ((move % 2) == 0) {
@@ -197,6 +207,7 @@ public class TrilhaState implements Cloneable {
         }
     }
 
+    //Retorna se o número de peças de algum jogador chegou a ser menor que 3
     public boolean contaPecas() {
         if (Integer.parseInt(board[24]) < 9 && Integer.parseInt(board[25]) < 9) {
             return false;
@@ -216,6 +227,7 @@ public class TrilhaState implements Cloneable {
         return false;
     }
 
+    //Retorna uma lista com todos os movimentos possível
     public List<XYLocation> getMoves() {
         List<XYLocation> result = new ArrayList<XYLocation>();
         //Verifica se não é para remover uma peça
@@ -236,14 +248,27 @@ public class TrilhaState implements Cloneable {
             } else {
                 for (int i = 0; i < 24; i++) {
                     if (board[i] == playerToMove) {
-                        for (int e : this.adjacentes[i]) {
-                            if (e != -1 && getValue(-1, e) == EMPTY)
-                                result.add(new XYLocation(i, e));
+                        int cont = 0;
+                        for (int j = 0; j < 24; j++) {
+                            if (board[j] == playerToMove)
+                                cont++;
+                        }
+                        if (cont > 3) {
+                            for (int e : this.adjacentes[i]) {
+                                if (e != -1 && getValue(-1, e) == EMPTY)
+                                    result.add(new XYLocation(i, e));
+                            }
+                        } else {
+                            for (int j = 0; j < 24; j++) {
+                                if (board[j] == EMPTY)
+                                    result.add(new XYLocation(i, j));
+                            }
                         }
                     }
                 }
             }
         }
+        Collections.shuffle(result);
         return result;
     }
 
