@@ -209,7 +209,7 @@ public class TrilhaState implements Cloneable {
 
     //Retorna se o número de peças de algum jogador chegou a ser menor que 3
     public boolean contaPecas() {
-        if (Integer.parseInt(board[24]) < 9 && Integer.parseInt(board[25]) < 9) {
+        if (Integer.parseInt(board[24]) < 9 || Integer.parseInt(board[25]) < 9) {
             return false;
         }
         int contb = 0;
@@ -246,26 +246,30 @@ public class TrilhaState implements Cloneable {
                         result.add(new XYLocation(-1, i));
                 }
             } else {
-                for (int i = 0; i < 24; i++) {
-                    if (board[i] == playerToMove) {
-                        int cont = 0;
-                        for (int j = 0; j < 24; j++) {
-                            if (board[j] == playerToMove)
-                                cont++;
+                int cont = 0;
+                for (int j = 0; j < 24; j++) {
+                    if (board[j] == playerToMove)
+                        cont++;
+                }
+                if (cont > 3) {
+                    for (int i = 0; i < 24; i++) {
+                        for (int e : this.adjacentes[i]) {
+                            if (e != -1 && getValue(-1, e) == EMPTY)
+                                result.add(new XYLocation(i, e));
                         }
-                        if (cont > 3) {
-                            for (int e : this.adjacentes[i]) {
-                                if (e != -1 && getValue(-1, e) == EMPTY)
-                                    result.add(new XYLocation(i, e));
-                            }
-                        } else {
+                    }
+                } else {
+                    for (int i = 0; i < 24; i++) {
+                        if (board[i] == playerToMove) {
                             for (int j = 0; j < 24; j++) {
                                 if (board[j] == EMPTY)
                                     result.add(new XYLocation(i, j));
                             }
+
                         }
                     }
                 }
+
             }
         }
         Collections.shuffle(result);
