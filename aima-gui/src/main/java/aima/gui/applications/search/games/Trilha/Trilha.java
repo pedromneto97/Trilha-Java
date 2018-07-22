@@ -30,6 +30,7 @@ public class Trilha extends JFrame {
     private TrilhaState state;
     private int anterior;
     private IterativeDeepeningAlphaBetaSearch<TrilhaState, XYLocation, String> search;
+    private int time = 300;
 
     public Trilha() {
         //Instancia o jogo
@@ -37,7 +38,7 @@ public class Trilha extends JFrame {
         //Pega o estado inicial
         this.state = this.game.getInitialState();
         //Cria a pesquisa, alterar o último parâmetro, altera o tempo de busca da IA
-        this.search = IterativeDeepeningAlphaBetaSearch.createFor(game, 0.0, 1.0, 1);
+        this.search = IterativeDeepeningAlphaBetaSearch.createFor(game, 0.0, 1.0, this.time);
         this.anterior = -1;
         setLayout(null);
         for (int i = 0; i < 24; i++) {
